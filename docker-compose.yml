@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  auth-db:
+    image: postgres:13
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  notes-db:
+    image: postgres:13
+    container_name: notes_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: notes_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - notes_db_data:/var/lib/postgresql/data
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth_service
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./auth-service:/app
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL: postgresql://user:password@auth-db/auth_db
+      SECRET_KEY: ${SECRET_KEY}
+    depends_on:
+      - auth-db
+
+  notes-service:
+    build: ./notes-service
+    container_name: notes_service
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./notes-service:/app
+    ports:
+      - "8002:8000"
+    environment:
+      DATABASE_URL: postgresql://user:password@notes-db/notes_db
+      SECRET_KEY: ${SECRET_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+    depends_on:
+      - notes-db
+
+volumes:
+  auth_db_data:
+  notes_db_data:
