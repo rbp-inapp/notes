@@ -26,11 +26,11 @@ services:
       - notes_db_data:/var/lib/postgresql/data
 
   auth-service:
-    build: ./auth-service
+    build: ./backend/auth-service
     container_name: auth_service
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./auth-service:/app
+      - ./backend/auth-service:/app
     ports:
       - "8001:8000"
     environment:
@@ -40,11 +40,11 @@ services:
       - auth-db
 
   notes-service:
-    build: ./notes-service
+    build: ./backend/notes-service
     container_name: notes_service
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      - ./notes-service:/app
+      - ./backend/notes-service:/app
     ports:
       - "8002:8000"
     environment:

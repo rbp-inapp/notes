@@ -11,6 +11,16 @@ models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Auth configuration (Must match Auth Service)
 SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
 ALGORITHM = "HS256"
@@ -67,3 +77,15 @@ def delete_note(note_id: int, db: Session = Depends(database.get_db), current_us
     db.delete(note)
     db.commit()
     return {"ok": True}
+
+@app.put("/notes/{note_id}", response_model=schemas.Note)
+def update_note(note_id: int, note_update: schemas.NoteCreate, db: Session = Depends(database.get_db), current_user: str = Depends(get_current_user)):
+    db_note = db.query(models.Note).filter(models.Note.id == note_id, models.Note.user_id == current_user).first()
+    if db_note is None:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    db_note.title = note_update.title
+    db_note.content = note_update.content
+    db.commit()
+    db.refresh(db_note)
+    return db_note
