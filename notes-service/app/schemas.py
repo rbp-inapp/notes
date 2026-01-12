@@ -15,4 +15,4 @@ class Note(NoteBase):
     content_url: Optional[str] = None # Presigned URL (Deprecated for local flow)
 
     class Config:
-        orm_mode = True
+        from_attributes = True
