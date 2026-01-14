@@ -1,30 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
 :root {
-  font-family: 'Outfit', sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: 'Georgia', sans-serif; /* Font family */   
+  line-height: 1.5; /* Line height */
+  font-weight: 400; /* Font weight */
   
-  color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0f172a; /* Slate 900 */
+  color-scheme: normal; /* Color scheme */
+  color: rgba(255, 255, 255, 0.87); /* Text color */
+  background-color: #0f172a; /* Background color - Slate 900 */
 
-  --primary: #8b5cf6; /* Violet 500 */
-  --primary-hover: #7c3aed; /* Violet 600 */
-  --glass-bg: rgba(30, 41, 59, 0.7); /* Slate 800 with opacity */
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --text-muted: #94a3b8;
+  --primary: #8b5cf6; /* Buttons - Violet 500 */
+  --primary-hover: #7c3aed; /*Button hover - Violet 600 */
+  --glass-bg: rgba(30, 41, 59, 0.7); /* Glass background - Slate 800 with opacity */
+  --glass-border: rgba(255, 255, 255, 0.1); /* Glass border */
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Glass shadow */
+  --text-muted: #94a3b8; /* Text muted - Slate 400 */
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
-  background-attachment: fixed;
+  margin: 0; /* Remove default margin - browser window margin */
+  display: flex; /* Flexbox layout */
+  place-items: center; /* Center items */
+  min-width: 32px; /* Minimum width - prevents horizontal scrolling (layout breaking)*/
+  min-height: 100vh; /* Minimum height */
+  background: radial-gradient(circle at top left, #1e1b4b, #0f172a); /* Background gradient */
+  background-attachment: fixed; /* Fixed background - Bg is fixed while scrolling*/
 }
 
 #root {
@@ -168,19 +166,36 @@ button.icon-btn {
 }
 
 .notes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  column-count: 3;
+  column-gap: 1.5rem;
+}
+
+@media (max-width: 1100px) {
+  .notes-grid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 700px) {
+  .notes-grid {
+    column-count: 1;
+  }
 }
 
 .note-card {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+ 
   min-height: 200px;
   transition: transform 0.2s;
   text-align: left;
+  width: 300px;            
+  max-width: 300px;
+  overflow: hidden;
+  break-inside: avoid;
+  margin-bottom: 1.5rem;        
+  
 }
 
 .note-card:hover {
@@ -193,18 +208,34 @@ button.icon-btn {
   font-weight: 600;
   margin-bottom: 1rem;
   color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .note-content {
+  font-size: 0.9rem;
   color: var(--text-muted);
-  flex-grow: 1;
+
+  display: -webkit-box;
+
+  line-clamp: 5;                /* Standard (draft) */
+  -webkit-line-clamp: 5;        /* WebKit browsers */
+ 
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
   white-space: pre-wrap;
 }
 
+
 .note-footer {
-  margin-top: 1.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+
   display: flex;
   justify-content: flex-end;
+
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -221,4 +252,64 @@ button.icon-btn {
 
 .fade-in {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Note Modal */
+.note-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.note-modal {
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  
+  display: flex;
+  flex-direction: column;
+
+  padding: 2rem;
+}
+
+.note-modal-title {
+  font-size: 1.4rem;
+  font-weight: 200;
+  color: var(--text-muted);
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+
+  flex: 1;
+}
+
+.note-modal-content {
+  overflow-y: auto;
+  white-space: pre-wrap;
+  color: white;
+  line-height: 1.6;
+  max-height: calc(80vh - 120px);
+}
+
+.note-modal-header {
+  position: sticky;
+  top: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+
+  z-index: 2;
 }

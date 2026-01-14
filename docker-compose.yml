@@ -57,6 +57,18 @@ services:
     depends_on:
       - notes-db
 
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - auth-service
+      - notes-service
+
 volumes:
   auth_db_data:
   notes_db_data:

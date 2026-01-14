@@ -9,6 +9,8 @@ const Dashboard = () => {
     const [editingId, setEditingId] = useState(null); // Track which note is being edited
     const [newNoteTitle, setNewNoteTitle] = useState('');
     const [newNoteContent, setNewNoteContent] = useState('');
+    const [activeNote, setActiveNote] = useState(null);
+
 
     useEffect(() => {
         fetchNotes();
@@ -144,7 +146,11 @@ const Dashboard = () => {
             ) : (
                 <div className="notes-grid">
                     {userNotes.map((note) => (
-                        <div key={note.id} className="glass-panel note-card fade-in">
+                        <div
+                            key={note.id}
+                            className="glass-panel note-card fade-in"
+                            onClick={() => setActiveNote(note)}
+                        >
                             <div>
                                 <div className="note-title">{note.title}</div>
                                 <div className="note-content">{note.content}</div>
@@ -153,14 +159,20 @@ const Dashboard = () => {
                             <div className="note-footer" style={{ gap: '0.5rem' }}>
                                 <button
                                     className="icon-btn secondary"
-                                    onClick={() => handleEditClick(note)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditClick(note);
+                                    }}
                                     title="Edit Note"
                                 >
                                     <Edit size={16} />
                                 </button>
-                                <button
+                               <button
                                     className="icon-btn danger"
-                                    onClick={() => handleDeleteNote(note.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteNote(note.id);
+                                    }}
                                     title="Delete Note"
                                 >
                                     <Trash2 size={16} />
@@ -170,6 +182,76 @@ const Dashboard = () => {
                     ))}
                 </div>
             )}
+
+            {activeNote && (
+                <div className="glass-panel" style={{ marginBottom: '2rem', padding: '1.5rem', border: '1px solid var(--primary)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                        <h3>Edit Note</h3>
+                        <button className="icon-btn secondary" onClick={() => setActiveNote(null)}>
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSaveNote}>
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                placeholder="Note Title"
+                                value={activeNote.title}
+                                onChange={(e) => setActiveNote({ ...activeNote, title: e.target.value })}
+                                required
+                                autoFocus
+                                style={{ fontSize: '1.2rem', fontWeight: 'bold' }}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <textarea
+                                placeholder="Write your note here..."
+                                value={activeNote.content}
+                                onChange={(e) => setActiveNote({ ...activeNote, content: e.target.value })}
+                                required
+                                rows={5}
+                                style={{ resize: 'vertical' }}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                            <button type="button" className="secondary" onClick={() => setActiveNote(null)}>
+                                Cancel
+                            </button>
+                            <button type="submit">
+                                <Save size={18} /> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+            {activeNote && (
+  <div className="note-modal-overlay" onClick={() => setActiveNote(null)}>
+    <div
+      className="glass-panel note-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="note-modal-header">
+            <div className="note-modal-title">
+            {activeNote.title}
+            </div>
+        <button
+          className="icon-btn secondary"
+          onClick={() => setActiveNote(null)}
+          aria-label='Close note'
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      <div className="note-modal-content">
+        {activeNote.content}
+      </div>
+    </div>
+  </div>
+)}
         </div>
     );
 };

@@ -41,7 +41,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <h2>Welcome Back</h2>
+                <h2>Notiiiii</h2>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
                     Login to access your notes
                 </p>
